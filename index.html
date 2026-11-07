@@ -121,14 +121,14 @@ import { getFirestore, collection, doc, setDoc, onSnapshot, serverTimestamp }
 const BG_URL = "";
 if (BG_URL) document.body.style.setProperty("--bg-image", `url("${BG_URL}")`);
 
-// 切り抜き画像は index.html と同じ場所の img フォルダに置く
+// 画像は index.html と同じ場所に置く
 const ITEMS = [
-  { id: "mj1", name: "タマ",     img: "img/tama.png" },
-  { id: "mj2", name: "しゃちょう", img: "img/shacho.png" },
-  { id: "mj3", name: "パウル",   img: "img/paul.png" },
-  { id: "mj4", name: "はかせ",   img: "img/hakase.png" },
-  { id: "mj5", name: "コーン",   img: "img/cone.png" },
-  { id: "mj6", name: "キャベツ", img: "img/cabbage.png" }
+  { id: "mj1", name: "タマ",     img: "IMG_tama.jpg" },
+  { id: "mj2", name: "しゃちょう", img: "IMG_shacho.jpg" },
+  { id: "mj3", name: "パウル",   img: "IMG_paul.jpg" },
+  { id: "mj4", name: "はかせ",   img: "IMG_hakase.jpg" },
+  { id: "mj5", name: "コーン",   img: "IMG_corn.jpg" },
+  { id: "mj6", name: "キャベツ", img: "IMG_cabbage.jpg" }
 ];
 // 並び順がそのまま外枠の左→右の順になる
 const PEOPLE = [
