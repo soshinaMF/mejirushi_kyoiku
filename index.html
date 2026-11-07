@@ -1,0 +1,281 @@
+<!doctype html>
+<html lang="ja">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="robots" content="noindex,nofollow">
+<title>めじるしチャーム</title>
+<meta name="apple-mobile-web-app-title" content="めじるし">
+<style>
+:root{
+  --ink:#16302b; --mute:#5f7673; --card:#ffffffee; --line:#d3e0dc;
+  --arare:#8e44ad; --mainan:#2bb5e8; --naoki:#e53935;
+  --btn:#5b6b69; --focus:#1a73e8;
+  --rainbow:linear-gradient(90deg,#e53935,#fb8c00,#fdd835,#43a047,#1e88e5,#8e44ad);
+}
+@media (prefers-color-scheme: dark){
+  :root{ --ink:#e6f1ee; --mute:#a7bcb9; --card:#16241feb; --line:#27403a; --btn:#42524f; --focus:#7ab0ff; }
+}
+*{box-sizing:border-box}
+[hidden]{display:none!important}
+html{-webkit-text-size-adjust:100%}
+/* 背景：下の BG_URL を設定すると教育番組サイトの背景画像になります。未設定の間は空と丘のグラデーション */
+body{
+  margin:0; color:var(--ink); min-height:100vh;
+  font-family:"Hiragino Maru Gothic ProN","Hiragino Sans","Noto Sans JP","Yu Gothic",sans-serif;
+  line-height:1.5;
+  background:
+    var(--bg-image, none) center / cover fixed no-repeat,
+    linear-gradient(180deg,#9fd0e6 0%,#cfe8ef 38%,#8fc79b 38.1%,#6fae82 100%) fixed;
+  padding:env(safe-area-inset-top) env(safe-area-inset-right) env(safe-area-inset-bottom) env(safe-area-inset-left);
+}
+header{padding:20px 16px 8px; max-width:960px; margin:0 auto}
+h1{margin:0; font-size:1.5rem; letter-spacing:.02em; text-shadow:0 1px 0 #fff8}
+.count{display:flex; flex-wrap:wrap; gap:6px 18px; margin:10px 0 14px; font-size:.95rem; background:var(--card); padding:8px 14px; border-radius:12px; width:fit-content}
+.count b{font-size:1.5rem; font-variant-numeric:tabular-nums}
+.count .a b{color:var(--arare)} .count .m b{color:var(--mainan)} .count .k b{color:var(--naoki)} .count .n b{color:var(--mute)}
+.strip{display:grid; grid-template-columns:repeat(6,1fr); gap:4px}
+.cell{
+  appearance:none; border:0; padding:0; height:22px; border-radius:4px; background:#c9d6d2; cursor:pointer;
+}
+.cell:focus-visible,button:focus-visible{outline:3px solid var(--focus); outline-offset:2px}
+.stripnote{margin:6px 0 0; font-size:.78rem; color:var(--ink); text-shadow:0 1px 0 #fff8}
+.tabs{
+  position:sticky; top:0; z-index:5; display:flex; gap:8px; padding:10px 16px; max-width:960px; margin:0 auto; overflow-x:auto;
+  padding-top:calc(10px + env(safe-area-inset-top));
+}
+.tab{
+  appearance:none; border:1px solid var(--line); background:var(--card); color:var(--ink);
+  padding:8px 14px; border-radius:999px; font:inherit; font-size:.9rem; white-space:nowrap; cursor:pointer;
+}
+.tab[aria-pressed="true"]{background:var(--ink); color:#fff; border-color:var(--ink)}
+@media (prefers-color-scheme: dark){ .tab[aria-pressed="true"]{color:#0f1a18} }
+#msg{max-width:960px; margin:8px auto 0; padding:0 16px}
+#msg p{margin:0; padding:10px 12px; border-radius:8px; background:#fff2cc; color:#16302b; font-size:.9rem}
+main{
+  max-width:960px; margin:0 auto; padding:8px 16px 40px;
+  display:grid; grid-template-columns:repeat(2,minmax(0,1fr)); gap:12px;
+}
+@media (min-width:640px){ main{grid-template-columns:repeat(3,minmax(0,1fr))} }
+
+/* 外枠：押した人数に応じて 0=灰色 / 1=単色 / 2=左右半分 / 3=虹色 */
+.card{
+  --frame:var(--line);
+  border:5px solid transparent; border-radius:16px; overflow:hidden;
+  background:
+    linear-gradient(var(--card),var(--card)) padding-box,
+    var(--frame) border-box;
+  display:flex; flex-direction:column;
+}
+.card.flash{outline:4px solid var(--focus); outline-offset:2px}
+.photo{position:relative; aspect-ratio:1/1; display:grid; place-items:center; padding:10px}
+.photo img{max-width:100%; max-height:100%; object-fit:contain; transition:filter .2s, opacity .2s}
+.card[data-n="0"] .photo img{filter:grayscale(1); opacity:.5}
+.photo .no{
+  position:absolute; left:8px; top:6px; font-size:.8rem; color:#4a5f5c; font-variant-numeric:tabular-nums;
+  background:rgba(255,255,255,.85); padding:0 6px; border-radius:6px;
+}
+.info{padding:2px 12px 4px; text-align:center}
+.info h2{margin:0; font-size:1.15rem}
+.who{padding:8px 10px 12px; display:grid; grid-template-columns:repeat(3,1fr); gap:6px}
+.who button{
+  appearance:none; border:2px solid transparent; background:var(--btn); color:#fff; font:inherit; font-size:.85rem;
+  padding:10px 0; border-radius:10px; cursor:pointer; min-height:44px; white-space:nowrap;
+}
+.who button[aria-pressed="true"]{font-weight:700; box-shadow:inset 0 0 0 2px #fff6}
+.who button[data-p="arare"][aria-pressed="true"]{background:var(--arare)}
+.who button[data-p="mainan"][aria-pressed="true"]{background:var(--mainan)}
+.who button[data-p="naoki"][aria-pressed="true"]{background:var(--naoki)}
+.empty{grid-column:1/-1; text-align:center; color:var(--ink); padding:40px 0}
+@media (prefers-reduced-motion: reduce){ .photo img{transition:none} }
+</style>
+</head>
+<body>
+<header>
+  <h1>めじるしチャーム</h1>
+  <div class="count">
+    <span class="a"><b id="nArare">0</b> あられ</span>
+    <span class="m"><b id="nMainan">0</b> まいなん</span>
+    <span class="k"><b id="nNaoki">0</b> なおき</span>
+    <span class="n"><b id="nNone">6</b> 未取得</span>
+  </div>
+  <div class="strip" id="strip" aria-label="状況の一覧"></div>
+  <p class="stripnote">四角をタップすると、そのカードに移動します</p>
+</header>
+<nav class="tabs" id="tabs">
+  <button class="tab" data-f="all" aria-pressed="true">すべて</button>
+  <button class="tab" data-f="none" aria-pressed="false">未取得</button>
+  <button class="tab" data-f="arare" aria-pressed="false">あられ</button>
+  <button class="tab" data-f="mainan" aria-pressed="false">まいなん</button>
+  <button class="tab" data-f="naoki" aria-pressed="false">なおき</button>
+</nav>
+<div id="msg"></div>
+<main id="grid"></main>
+
+<script type="module">
+import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
+import { getFirestore, collection, doc, setDoc, onSnapshot, serverTimestamp }
+  from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
+
+// ★ 教育番組サイトの背景画像のURLが分かったらここに入れる（空のままならグラデーション背景）
+const BG_URL = "";
+if (BG_URL) document.body.style.setProperty("--bg-image", `url("${BG_URL}")`);
+
+// 画像は index.html と同じ場所に置く
+const ITEMS = [
+  { id: "mj1", name: "タマ",     img: "IMG_tama.jpg" },
+  { id: "mj2", name: "しゃちょう", img: "IMG_shacho.jpg" },
+  { id: "mj3", name: "パウル",   img: "IMG_paul.jpg" },
+  { id: "mj4", name: "はかせ",   img: "IMG_hakase.jpg" },
+  { id: "mj5", name: "コーン",   img: "IMG_corn.jpg" },
+  { id: "mj6", name: "キャベツ", img: "IMG_cabbage.jpg" }
+];
+// 並び順がそのまま外枠の左→右の順になる
+const PEOPLE = [
+  { key: "arare",  label: "あられ",   color: "#8e44ad" },
+  { key: "mainan", label: "まいなん", color: "#2bb5e8" },
+  { key: "naoki",  label: "なおき",   color: "#e53935" }
+];
+const RAINBOW = "linear-gradient(90deg,#e53935,#fb8c00,#fdd835,#43a047,#1e88e5,#8e44ad)";
+const GRAY = "#c9d6d2";
+
+const $ = (s) => document.querySelector(s);
+const data = {};            // id -> ["arare", ...]
+let filter = "all";
+let db = null;
+
+function say(text){
+  const box = $("#msg");
+  box.replaceChildren();
+  if (text){ const p = document.createElement("p"); p.textContent = text; box.append(p); }
+}
+
+// 押した人の並びから外枠の背景を作る
+function frameOf(owners){
+  const cs = PEOPLE.filter((p) => owners.includes(p.key)).map((p) => p.color);
+  if (cs.length === 0) return GRAY;
+  if (cs.length === 1) return cs[0];
+  if (cs.length === 2) return `linear-gradient(90deg, ${cs[0]} 50%, ${cs[1]} 50%)`;
+  return RAINBOW;
+}
+
+// ---------- 画面を作る（最初の1回だけ） ----------
+const grid = $("#grid"), strip = $("#strip");
+const cards = [], cells = [];
+ITEMS.forEach((it, i) => {
+  const cell = document.createElement("button");
+  cell.className = "cell"; cell.dataset.id = it.id;
+  cell.setAttribute("aria-label", `${it.name}へ移動`);
+  strip.append(cell); cells.push(cell);
+
+  const card = document.createElement("article");
+  card.className = "card"; card.id = "c" + it.id; card.dataset.id = it.id; card.dataset.n = "0";
+  card.innerHTML = `
+    <div class="photo"><span class="no">${i + 1}</span>
+      <img loading="lazy" alt="${it.name}" src="${it.img}"></div>
+    <div class="info"><h2>${it.name}</h2></div>
+    <div class="who" role="group" aria-label="${it.name}の取得者">
+      ${PEOPLE.map((p) => `<button type="button" data-p="${p.key}" aria-pressed="false">${p.label}</button>`).join("")}
+    </div>`;
+  grid.append(card); cards.push(card);
+});
+const empty = document.createElement("p");
+empty.className = "empty"; empty.textContent = "該当するチャームはありません"; empty.hidden = true;
+grid.append(empty);
+
+grid.addEventListener("error", (e) => {
+  if (e.target.tagName === "IMG") e.target.style.visibility = "hidden";
+}, true);
+
+// ---------- 表示の更新 ----------
+function owners(id){ return data[id] || []; }
+
+function update(){
+  const total = { arare: 0, mainan: 0, naoki: 0 };
+  let none = 0, shown = 0;
+  ITEMS.forEach((it, k) => {
+    const o = owners(it.id);
+    const card = cards[k];
+    card.dataset.n = String(o.length);
+    card.style.setProperty("--frame", frameOf(o));
+    cells[k].style.background = frameOf(o);
+    card.querySelectorAll(".who button").forEach((b) => b.setAttribute("aria-pressed", String(o.includes(b.dataset.p))));
+    PEOPLE.forEach((p) => { if (o.includes(p.key)) total[p.key]++; });
+    if (o.length === 0) none++;
+    const match = filter === "all" || (filter === "none" ? o.length === 0 : o.includes(filter));
+    card.hidden = !match;
+    if (match) shown++;
+  });
+  $("#nArare").textContent = total.arare;
+  $("#nMainan").textContent = total.mainan;
+  $("#nNaoki").textContent = total.naoki;
+  $("#nNone").textContent = none;
+  empty.hidden = shown !== 0;
+}
+
+// ---------- 操作 ----------
+async function save(id, list){
+  data[id] = list;
+  update();                                   // 先に画面へ反映
+  if (!db) return;
+  try {
+    await setDoc(doc(db, "charms", id), { owners: list, updatedAt: serverTimestamp() });
+    say("");
+  } catch (err) {
+    console.error(err);
+    say("保存できませんでした。通信状況と、Firestoreのルール設定を確認してください。");
+  }
+}
+
+grid.addEventListener("click", (e) => {
+  const b = e.target.closest(".who button");
+  if (!b) return;
+  const id = b.closest(".card").dataset.id;
+  const p = b.dataset.p;
+  const cur = owners(id);
+  const next = cur.includes(p) ? cur.filter((x) => x !== p) : [...cur, p];
+  save(id, PEOPLE.map((x) => x.key).filter((k) => next.includes(k)));   // 常に あられ→まいなん→なおき の順
+});
+strip.addEventListener("click", (e) => {
+  const c = e.target.closest(".cell");
+  if (!c) return;
+  const card = $("#c" + c.dataset.id);
+  if (card.hidden){ filter = "all"; syncTabs(); update(); }
+  card.scrollIntoView({ behavior: "smooth", block: "center" });
+  card.classList.add("flash");
+  setTimeout(() => card.classList.remove("flash"), 1200);
+});
+function syncTabs(){
+  document.querySelectorAll(".tab").forEach((t) => t.setAttribute("aria-pressed", String(t.dataset.f === filter)));
+}
+$("#tabs").addEventListener("click", (e) => {
+  const t = e.target.closest(".tab");
+  if (!t) return;
+  filter = t.dataset.f;
+  syncTabs(); update();
+});
+
+// ---------- Firebaseにつなぐ ----------
+let firebaseConfig = null;
+try { ({ firebaseConfig } = await import("./config.js")); } catch (err) { /* config.jsが無い */ }
+
+if (!firebaseConfig || !firebaseConfig.projectId || String(firebaseConfig.apiKey).includes("ここ")){
+  say("config.js が見つからないか、中身が未設定です（それまでは保存されません）。");
+} else {
+  db = getFirestore(initializeApp(firebaseConfig));
+  onSnapshot(collection(db, "charms"), (snap) => {
+    snap.forEach((d) => {
+      if (!d.id.startsWith("mj")) return;
+      const v = d.data();
+      data[d.id] = Array.isArray(v.owners) ? v.owners.filter((k) => PEOPLE.some((p) => p.key === k)) : [];
+    });
+    update();
+  }, (err) => {
+    console.error(err);
+    say("データを読み込めませんでした。Firestoreのルール設定とconfig.jsの内容を確認してください。");
+  });
+}
+update();
+</script>
+</body>
+</html>
