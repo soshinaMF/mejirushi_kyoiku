@@ -34,10 +34,13 @@ h1{margin:0; font-size:1.5rem; letter-spacing:.02em; text-shadow:0 1px 0 #fff8}
 .count{display:flex; flex-wrap:wrap; gap:6px 18px; margin:10px 0 14px; font-size:.95rem; background:var(--card); padding:8px 14px; border-radius:12px; width:fit-content}
 .count b{font-size:1.5rem; font-variant-numeric:tabular-nums}
 .count .a b{color:var(--arare)} .count .m b{color:var(--mainan)} .count .k b{color:var(--naoki)} .count .n b{color:var(--mute)}
-.strip{display:grid; grid-template-columns:repeat(6,1fr); gap:4px}
+.strip{display:grid; grid-template-columns:repeat(6,minmax(0,1fr)); gap:4px; container-type:inline-size}
 .cell{
-  appearance:none; border:0; padding:0; height:22px; border-radius:4px; background:#c9d6d2; cursor:pointer;
+  appearance:none; border:0; padding:0 1px; height:36px; border-radius:6px; background:#c9d6d2; cursor:pointer;
+  font:inherit; font-size:min(.72rem, 2.8cqw); font-weight:700; letter-spacing:-.03em; white-space:nowrap; overflow:hidden;
+  color:#fff; text-shadow:0 0 3px #000a, 0 1px 1px #0008;
 }
+.cell[data-n="0"]{color:var(--ink); text-shadow:0 1px 0 #fff8}
 .cell:focus-visible,button:focus-visible{outline:3px solid var(--focus); outline-offset:2px}
 .stripnote{margin:6px 0 0; font-size:.78rem; color:var(--ink); text-shadow:0 1px 0 #fff8}
 .tabs{
@@ -165,7 +168,7 @@ const grid = $("#grid"), strip = $("#strip");
 const cards = [], cells = [];
 ITEMS.forEach((it, i) => {
   const cell = document.createElement("button");
-  cell.className = "cell"; cell.dataset.id = it.id;
+  cell.className = "cell"; cell.dataset.id = it.id; cell.dataset.n = "0"; cell.textContent = it.name;
   cell.setAttribute("aria-label", `${it.name}へ移動`);
   strip.append(cell); cells.push(cell);
 
@@ -200,6 +203,7 @@ function update(){
     card.dataset.n = String(o.length);
     card.style.setProperty("--frame", frameOf(o));
     cells[k].style.background = frameOf(o);
+    cells[k].dataset.n = String(o.length);
     card.querySelectorAll(".who button").forEach((b) => b.setAttribute("aria-pressed", String(o.includes(b.dataset.p))));
     PEOPLE.forEach((p) => { if (o.includes(p.key)) total[p.key]++; });
     if (o.length === 0) none++;
